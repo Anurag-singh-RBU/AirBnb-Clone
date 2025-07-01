@@ -8,6 +8,9 @@
 <body>
 
     <h1>All Listings</h1>
+    <form method="GET" action="/listings/new">
+        <button type="submit">Create New</button>
+    </form>
     <ul>
         <% for(let data of allData) { %>
             <li><a href="/listings/<%= data._id %>"><%= data.title %></li>
