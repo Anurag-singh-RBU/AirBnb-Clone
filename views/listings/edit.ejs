@@ -4,8 +4,7 @@
 <div class="row">
     <div class="col-8 offset-2">
     <form method="POST" action="/listings/<%= listing._id %>?_method=PUT">
-
-        
+       
         <div class="mb-3">
         <label for="title" class="form-label">Title</label>        
         <input type="text" name="listing[title]" value="<%= listing.title %>" class="form-control"></input>
@@ -42,6 +41,7 @@
 
         <button type="submit" class="btn btn-dark add-btn">Add</button>
         <br><br><br>
+        
     </form>
 
     </div>

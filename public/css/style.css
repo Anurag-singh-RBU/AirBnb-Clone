@@ -40,6 +40,7 @@ a{
 
     color: #fe424d;
     font-size: 2rem;
+    margin-top: 6px;
 
 }
 
@@ -137,6 +138,23 @@ a{
 
 }
 
+.show-img{
 
+    height: 30vh;
+
+}
+
+.btns{
+
+    display: flex;
+
+}
+
+.card-body{
+
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+
+}
 
 
