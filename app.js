@@ -5,6 +5,9 @@ const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
+const wrapAsync = require("./utils/wrapAsync.js");
+const ExpressError = require("./utils/ExpressError.js");
+const {LIST_SCHEMA} = require("./schema.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -37,12 +40,12 @@ app.get("/" , (req , res) => {
 
 });
 
-app.get("/listings" , async (req , res) => {
+app.get("/listings" , wrapAsync(async (req , res) => {
 
     const allData = await Listing.find({});
     res.render("listings/index.ejs" , {allData});
 
-});
+}));
 
 app.get("/listings/new" , (req , res) => {
 
@@ -50,50 +53,59 @@ app.get("/listings/new" , (req , res) => {
 
 });
 
-app.post("/listings" , async (req , res) => {
+app.post("/listings" , wrapAsync(async (req , res , next) => {
+    
+    let result = LIST_SCHEMA.validate(req.body);
 
-    const new_listing = new Listing(req.body.listing);
+    if(result.error) throw new ExpressError(400 , result.error);
+
+    const new_listing = new Listing(req.body.listing); 
     await new_listing.save();
-
     res.redirect("/listings");
 
-});
+}));
 
-app.get("/listings/:id/edit" , async (req , res) => {
+app.get("/listings/:id/edit" , wrapAsync(async (req , res) => {
 
     let {id} = req.params;
     const listing = await Listing.findById(id);
 
     res.render("listings/edit.ejs" , {listing});
 
-});
+}));
 
-app.put("/listings/:id" , async (req , res) => {
+app.put("/listings/:id" , wrapAsync(async (req , res) => {
 
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id , {...req.body.listing});
 
     res.redirect(`/listings/${id}`);
 
-});
+}));
 
-app.delete("/listings/:id" , async (req , res) => {
+app.delete("/listings/:id" , wrapAsync(async (req , res) => {
 
     let {id} = req.params;
     await Listing.findByIdAndDelete(id);
 
     res.redirect("/listings");
 
-})
+}));
 
-app.get("/listings/:id" , async (req , res) => {
+app.get("/listings/:id" , wrapAsync(async (req , res) => {
 
     let {id} = req.params;
     const list = await Listing.findById(id);
     res.render("listings/show.ejs" , {list});
 
-});
+}));
 
+app.use((err , req , res , next) => {
+
+    let {status = 500 , msg = "Something went wrong"} = err;
+    res.status(status).render("listings/error.ejs" , {err});
+
+})
 
 app.listen(8080 , () => {
 
