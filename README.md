@@ -26,4 +26,4 @@ A **Full Stack Clone** of the Airbnb website built using **Node.js**, **Express.
 | Database       | MongoDB (Mongoose ODM)     |
 | Authentication | Passport.js               |
 | Storage        | Multer + Cloudinary        |
-| Others         | Method-override , dotenv , express-session |
+| Others         | Method-override , dotenv , ejs mate |
