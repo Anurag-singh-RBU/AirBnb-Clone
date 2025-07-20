@@ -10,6 +10,7 @@ const ExpressError = require("./utils/ExpressError.js");
 const {LIST_SCHEMA} = require("./schema.js");
 const {REVIEW_SCHEMA} = require("./schema.js");
 const Review = require("./models/review.js");
+const session = require("express-session");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -35,6 +36,16 @@ app.use(express.urlencoded({extended : true}));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname , "/public")));
 app.engine('ejs' , ejsMate);
+
+const sessionOptions = {
+
+    secret: "SECRET_KEY",
+    resave: false,
+    saveUninitialized: true,
+
+}
+
+app.use(session(sessionOptions));
 
 app.get("/" , (req , res) => {
 
