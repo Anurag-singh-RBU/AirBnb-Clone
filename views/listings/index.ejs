@@ -1,21 +1,33 @@
 <% layout('/layouts/boilerplate') %>
-<body>
-    <h1>All Listings</h1>
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
-        <% for(let data of allData) { %>
-            <div class="card col list-card">
-                <a href="/listings/<%= data._id %>" style="text-decoration: none; color: inherit">
-                    <img src="<%= data.image %>" class="card-img-top" alt="listing image" style="height: 20rem">
-                    <div class="card-img-overlay"></div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            <b><%= data.title %></b><br>
-                            &#8377; <%= data.price.toLocaleString("en-IN") %>
-                        </p>
-                    </div>
-                </a>
-            </div>
-        <% } %>   
-    </div>
-</body>
-</html>
+
+<% if(success && success.length > 0) { %>
+  <div class="alert alert-success alert-dismissible fade show col-6 offset-3 mt-4" role="alert">
+    <%= success %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if(error && error.length > 0) { %>
+  <div class="alert alert-danger alert-dismissible fade show col-6 offset-3 mt-4" role="alert">
+    <%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<h1>All Listings</h1>
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+    <% for(let data of allData) { %>
+        <div class="card col list-card">
+            <a href="/listings/<%= data._id %>" style="text-decoration: none; color: inherit">
+                <img src="<%= data.image %>" class="card-img-top" alt="listing image" style="height: 20rem">
+                <div class="card-img-overlay"></div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <b><%= data.title %></b><br>
+                        &#8377; <%= data.price.toLocaleString("en-IN") %>
+                    </p>
+                </div>
+            </a>
+        </div>
+    <% } %>   
+</div>

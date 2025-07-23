@@ -1,0 +1,84 @@
+<% layout('/layouts/boilerplate') -%>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    h1 {
+        font-weight: bold;
+        color: #343a40;
+        text-align: center;
+    }
+
+    .form-container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .alert {
+        font-weight: bold;
+        font-size: 0.95rem;
+    }
+
+    .btn-success {
+        width: 100%;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+        border-color: #198754;
+    }
+</style>
+
+<div class="row mt-5 font-JB">
+    <div class="col-md-6 offset-md-3 font-JB">
+        <% if (success && success.length > 0) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <% if (error && error.length > 0) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <div class="form-container">
+            <h1 class="mb-4 font-JB">Sign Up To WanderLust</h1>
+
+            <form action="/signup" method="POST" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter Your Name" class="form-control font-JB" required>
+                    <div class="invalid-feedback">Please Enter a valid Username!</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="text" id="email" name="email" placeholder="Enter Your Email" class="form-control font-JB" required>
+                    <div class="invalid-feedback">Please Enter a valid Email!</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter Password" class="form-control font-JB" required>
+                    <div class="invalid-feedback">Please Enter a valid Password!</div>
+                </div>
+
+                <button type="submit" class="btn btn-success font-JB">Sign Up</button>
+            </form>
+        </div>
+    </div>
+</div>

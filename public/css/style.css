@@ -17,6 +17,13 @@ body{
 
 }
 
+.font-JB{
+
+    font-family: 'JetBrains Mono', monospace !important;
+
+}
+
+
 .container{
 
     flex: 1;

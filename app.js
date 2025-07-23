@@ -15,6 +15,7 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
+const {isLoggedIn} = require("./views/users/middleware.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -61,13 +62,34 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req, res, next) => {
+
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    res.locals.current = req.user;
+
+    next();
+    
+});
+
 passport.use(new LocalStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.get("/demo" , async (req , res) => {
+
+    let FAKE = new User({email: "churan@gmail.com" , username: "churan"});
+    let FAKE_USER = await User.register(FAKE , "churan123");
+
+    res.send(FAKE_USER);
+
+});
+
 app.get("/" , (req , res) => {
 
+    console.log("Current user: ", req.user);
     res.send("This is root");
 
 });
@@ -79,7 +101,7 @@ app.get("/listings" , wrapAsync(async (req , res) => {
 
 }));
 
-app.get("/listings/new" , (req , res) => {
+app.get("/listings/new" , isLoggedIn , (req , res) => {
 
     res.render("listings/new.ejs");
 
@@ -97,7 +119,7 @@ app.post("/listings" , wrapAsync(async (req , res , next) => {
 
 }));
 
-app.get("/listings/:id/edit" , wrapAsync(async (req , res) => {
+app.get("/listings/:id/edit" , isLoggedIn , wrapAsync(async (req , res) => {
 
     let {id} = req.params;
     const listing = await Listing.findById(id);
@@ -106,7 +128,7 @@ app.get("/listings/:id/edit" , wrapAsync(async (req , res) => {
 
 }));
 
-app.put("/listings/:id" , wrapAsync(async (req , res) => {
+app.put("/listings/:id" , isLoggedIn , wrapAsync(async (req , res) => {
 
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id , {...req.body.listing});
@@ -115,7 +137,7 @@ app.put("/listings/:id" , wrapAsync(async (req , res) => {
 
 }));
 
-app.delete("/listings/:id" , wrapAsync(async (req , res) => {
+app.delete("/listings/:id" , isLoggedIn , wrapAsync(async (req , res) => {
 
     let {id} = req.params;
     await Listing.findByIdAndDelete(id);
@@ -139,13 +161,71 @@ app.post("/listings/:id/reviews" , wrapAsync(async (req , res) => {
 }));
 
 
-app.get("/listings/:id" , wrapAsync(async (req , res) => {
+app.get("/listings/:id" , isLoggedIn , wrapAsync(async (req , res) => {
     
     let {id} = req.params;
     const list = await Listing.findById(id).populate("reviews");
     res.render("listings/show.ejs" , {list});
     
 }));
+
+app.get("/signup" , (req , res) => {
+
+    res.render("users/signup.ejs");
+
+});
+
+app.post("/signup" , wrapAsync (async (req , res) => {
+
+    try{
+
+        let {email , username , password} = req.body;
+        let NEW_USER = new User({email , username});
+        const REGISTERD = await User.register(NEW_USER , password);
+
+        req.login(REGISTERD , (err) => {
+
+            if(err) return next(err);
+
+            req.flash("success" , "Welcome to Wanderlust !");
+            return res.redirect("/listings");
+
+        });
+
+    } catch(err) {
+
+        req.flash("error" , err.message); 
+        res.redirect("/signup");
+
+    }
+
+
+}));
+
+app.get("/login" , (req , res) => {
+
+    res.render("users/login.ejs");
+
+});
+
+app.post("/login" , passport.authenticate("local" , {failureFlash: true ,failureRedirect: "/login",}), (req , res) => {
+
+    req.flash("success" , "Welcome Back !");
+    res.redirect(req.session.redirectTo || "/listings");
+
+});
+
+app.get("/logout" , (req , res , next) => {
+
+    req.logout((err) => {
+
+        if(err) return next(err);
+
+        req.flash("success" , "Logged out successfully");
+        res.redirect("/listings");
+
+    });
+});
 
 app.delete("/listings/:id/reviews/:reviewId" , wrapAsync(async (req , res) => {
 
