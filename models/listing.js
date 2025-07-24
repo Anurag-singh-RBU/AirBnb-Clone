@@ -21,13 +21,26 @@ const LIST_SCHEMA = new Schema({
         : v,
 
     },
+
     price : Number,
     location : String,
     country : String,
+
     reviews : [{
+
         type: Schema.Types.ObjectId,
         ref: "Review"
+
     }],
+
+    owner : {
+        
+        type : Schema.Types.ObjectId,
+        ref : "User",
+        required : true,
+
+    }
+
 });
 
 LIST_SCHEMA.post("findOneAndDelete" , async (listing) => {

@@ -89,7 +89,7 @@ app.get("/demo" , async (req , res) => {
 
 app.get("/" , (req , res) => {
 
-    console.log("Current user: ", req.user);
+    console.log("Current user : ", req.user);
     res.send("This is root");
 
 });
@@ -114,7 +114,11 @@ app.post("/listings" , wrapAsync(async (req , res , next) => {
     if(result.error) throw new ExpressError(400 , result.error);
 
     const new_listing = new Listing(req.body.listing); 
+    
+    new_listing.owner = req.user._id;
+
     await new_listing.save();
+
     res.redirect("/listings");
 
 }));
@@ -164,7 +168,7 @@ app.post("/listings/:id/reviews" , wrapAsync(async (req , res) => {
 app.get("/listings/:id" , isLoggedIn , wrapAsync(async (req , res) => {
     
     let {id} = req.params;
-    const list = await Listing.findById(id).populate("reviews");
+    const list = await Listing.findById(id).populate("reviews").populate("owner");
     res.render("listings/show.ejs" , {list});
     
 }));
