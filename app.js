@@ -150,10 +150,12 @@ app.delete("/listings/:id" , isLoggedIn , wrapAsync(async (req , res) => {
 
 }));
 
-app.post("/listings/:id/reviews" , wrapAsync(async (req , res) => {
+app.post("/listings/:id/reviews" , isLoggedIn , wrapAsync(async (req , res) => {
 
     let listing = await Listing.findById(req.params.id)
     let new_review = new Review(req.body.review);
+
+    new_review.author = req.user._id;
 
     listing.reviews.push(new_review);
 
@@ -168,7 +170,7 @@ app.post("/listings/:id/reviews" , wrapAsync(async (req , res) => {
 app.get("/listings/:id" , isLoggedIn , wrapAsync(async (req , res) => {
     
     let {id} = req.params;
-    const list = await Listing.findById(id).populate("reviews").populate("owner");
+    const list = await Listing.findById(id).populate({path : "reviews" , populate : {path : "author"}}).populate("owner");
     res.render("listings/show.ejs" , {list});
     
 }));
