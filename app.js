@@ -1,3 +1,9 @@
+if(process.env.NODE_ENV !== "production"){
+
+    require('dotenv').config();
+
+}
+
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
@@ -16,6 +22,9 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 const {isLoggedIn} = require("./views/users/middleware.js");
+const multer = require("multer");
+const {storage} = require("./cloudConfig.js");
+const upload = multer({storage});
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -107,19 +116,21 @@ app.get("/listings/new" , isLoggedIn , (req , res) => {
 
 });
 
-app.post("/listings" , wrapAsync(async (req , res , next) => {
+app.post("/listings" , upload.single("listing[image]") , wrapAsync(async (req , res , next) => {
     
-    let result = LIST_SCHEMA.validate(req.body);
+    // let result = LIST_SCHEMA.validate(req.body);
 
-    if(result.error) throw new ExpressError(400 , result.error);
+    // if(result.error) throw new ExpressError(400 , result.error);
 
-    const new_listing = new Listing(req.body.listing); 
+    // const new_listing = new Listing(req.body.listing); 
     
-    new_listing.owner = req.user._id;
+    // new_listing.owner = req.user._id;
 
-    await new_listing.save();
+    // await new_listing.save();
 
-    res.redirect("/listings");
+    // res.redirect("/listings");
+
+    res.send(req.file);
 
 }));
 
