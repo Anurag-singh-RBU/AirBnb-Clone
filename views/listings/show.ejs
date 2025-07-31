@@ -2,32 +2,26 @@
 
 <div class="container my-5">
 
-  <!-- Listing Card -->
   <div class="d-flex justify-content-center mb-5">
     <div class="listing-card rounded-4">
       <img src="<%= list.image %>" class="listing-img rounded-top" alt="Listing Image">
 
       <div class="p-4">
-        <!-- Owner -->
         <small class="text-muted d-block mb-1">
           <i class="bi bi-person-circle"></i> 
           <b><i>Owned By : </i></b> <%= list.owner && list.owner ? list.owner.username : "Unknown" %>
         </small>
 
-        <!-- Title -->
         <h2 class="fw-semibold text-primary mb-1"><%= list.title %></h2>
 
-        <!-- Description -->
         <p class="text-secondary mb-3" style="font-size: 0.95rem;">
           <%= list.description %>
         </p>
 
-        <!-- Location -->
         <p class="mb-1">
           <b><%= list.location %></b> , <%= list.country %>
         </p>
 
-        <!-- Price -->
         <p class="fw-bold fs-5 mb-3 text-dark">
           ₹ <%= list.price.toLocaleString("en-IN") %> 
           <span class="fw-normal fs-6 text-muted">/ night</span>
@@ -45,7 +39,6 @@
     </div>
   </div>
 
-  <!-- Review Form -->
     <div class="mx-auto mb-5" style="max-width: 700px;">
       <% if(current){ %>
       <h3 class="fw-bold mb-3 text-center">Leave a Review</h3>
@@ -78,7 +71,6 @@
       <% } %>
     </div>
 
-  <!-- Reviews Section -->
   <div class="reviews-section mx-auto" style="max-width: 900px;">
     <h3 class="fw-bold mb-4 text-center">Reviews</h3>
 
@@ -99,7 +91,6 @@
                   Rated : 3 stars
                 </p>
 
-                <!-- Review Comment -->
                 <p class="card-text text-secondary" style="text-align: justify;">
                   <%= review.comment %>
                 </p>
