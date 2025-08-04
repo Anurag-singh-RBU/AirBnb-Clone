@@ -5,7 +5,7 @@
   <!-- Listing Card -->
   <div class="d-flex justify-content-center mb-5">
     <div class="listing-card rounded-4">
-      <img src="<%= list.image %>" class="listing-img rounded-top" alt="Listing Image">
+      <img src="<%= list.image.url %>" class="listing-img rounded-top" alt="Listing Image">
 
       <div class="p-4">
         <!-- Owner -->
@@ -83,7 +83,7 @@
     <h3 class="fw-bold mb-4 text-center">Reviews</h3>
 
     <% if(list.reviews.length === 0){ %>
-      <p class="text-center text-muted">No reviews yet. Be the first to review !</p>
+      <p class="text-center text-muted">No reviews yet. Be the first to review</p>
     <% } else { %>
       <div class="row g-4">
         <% for(let review of list.reviews){ %>
@@ -119,5 +119,19 @@
       </div>
     <% } %>
   </div>
+
+  <div class="col-6 offset-3 mb-3">
+    <h3>Where You'll Be</h3>
+    <div id="map"></div>
+  </div>
+
+  <script>
+	  mapboxgl.accessToken = '<%= process.env.MAP_TOKEN %>';
+    const map = new mapboxgl.Map({
+      container: 'map', 
+      center: [79.0882 , 21.1458], 
+      zoom: 9
+    });
+  </script>
 
 </div>

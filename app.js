@@ -25,6 +25,9 @@ const {isLoggedIn} = require("./views/users/middleware.js");
 const multer = require("multer");
 const {storage} = require("./cloudConfig.js");
 const upload = multer({storage});
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const MAPtoken = process.env.MAP_TOKEN;
+const geocodingClient = mbxGeocoding({ accessToken: MAPtoken });
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -116,21 +119,28 @@ app.get("/listings/new" , isLoggedIn , (req , res) => {
 
 });
 
-app.post("/listings" , upload.single("listing[image]") , wrapAsync(async (req , res , next) => {
+app.post("/listings" , isLoggedIn , upload.single("listing[image]") , wrapAsync(async (req , res , next) => {
     
-    // let result = LIST_SCHEMA.validate(req.body);
+    let response = await geocodingClient.forwardGeocode({
 
-    // if(result.error) throw new ExpressError(400 , result.error);
+        query : req.body.listing.location,
+        limit : 1
 
-    // const new_listing = new Listing(req.body.listing); 
+    }).send()
+
+    let url = req.file.path;
+    let filename = req.file.filename;
+
+    const new_listing = new Listing(req.body.listing); 
     
-    // new_listing.owner = req.user._id;
+    new_listing.owner = req.user._id;
 
-    // await new_listing.save();
+    new_listing.image = {url , filename};
+    new_listing.geometry = response.body.features[0].geometry;
 
-    // res.redirect("/listings");
+    let saved = await new_listing.save();
 
-    res.send(req.file);
+    res.redirect("/listings");
 
 }));
 
@@ -143,10 +153,27 @@ app.get("/listings/:id/edit" , isLoggedIn , wrapAsync(async (req , res) => {
 
 }));
 
-app.put("/listings/:id" , isLoggedIn , wrapAsync(async (req , res) => {
+app.put("/listings/:id" , isLoggedIn , upload.single("listing[image]") , wrapAsync(async (req , res) => {
 
     let {id} = req.params;
-    await Listing.findByIdAndUpdate(id , {...req.body.listing});
+
+    if(!req.body || !req.body.listing){
+
+        return res.redirect(`/listings/${id}`);
+
+    }
+
+    let updated = await Listing.findByIdAndUpdate(id , {...req.body.listing});
+    
+    if(typeof req.file !== "undefined"){
+        
+        let url = req.file.path;
+        let filename = req.file.filename;
+
+        updated.image = {url , filename};
+        await updated.save();
+        
+    }
 
     res.redirect(`/listings/${id}`);
 
